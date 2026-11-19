@@ -8,17 +8,28 @@
     <link rel="stylesheet" href="../static/style.css">
 </head>
 <body>
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <div class="flash-message">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
 
 <header>
     <div class="logo">Ram<span>Book</span> Exchange</div>
 
     <nav>
-        <a href="index.html">Home</a>
-        <a href="marketplace.html">Browse Books</a>
-        <a href="add_book.html">Sell or Trade</a>
-        <a href="return_books.html">Return Books</a>
-        <a href="dashboard.html">Dashboard</a>
-        <a href="login.html">Logout (Demo)</a>
+        <a href="{{ url_for('index') }}">Home</a>
+        <a href="{{ url_for('marketplace') }}">Browse Books</a>
+        <a href="{{ url_for('add_book') }}">Sell or Trade</a>
+        <a href="{{ url_for('return_books') }}">Return Books</a>
+        <a href="{{ url_for('dashboard') }}">Dashboard</a>
+        <a href="{{ url_for('login') }}">Login</a>
+        <a href="{{ url_for('logout') }}">Logout</a>
+        <a href="{{ url_for('register') }}">Register</a>
     </nav>
 </header>
 
@@ -29,29 +40,31 @@
 
 <main class="dashboard-container">
 
-    <p class="dashboard-note">Student Dashboard — Sample Data</p>
 
     <div class="dashboard-stats">
 
         <div class="stat-card">
             <h3>Active Listings</h3>
-            <h2 id="listingCount">2</h2>
+            <h2 id="listingCount">{{ my_books | selectattr('status', 'equalto', 'Available') | list | length }}</h2>
         </div>
 
         <div class="stat-card">
             <h3>Exchange Requests</h3>
-            <h2>1</h2>
+            <h2>{{ my_requests | length }}</h2>
         </div>
 
         <div class="stat-card">
             <h3>Pending Returns</h3>
-            <h2>1</h2>
+            <h2>{{ pending_returns }}</h2>
         </div>
 
         <div class="stat-card">
             <h3>Completed Returns</h3>
-            <h2>3</h2>
+            <h2>{{ completed_returns }}</h2>
         </div>
+
+    </div>
+
 
     </div>
 
@@ -60,11 +73,12 @@
         <h2>Quick Actions</h2>
 
         <div class="dashboard-actions">
-            <a href="add_book.html">+ List a Textbook</a>
-            <a href="marketplace.html">Browse Textbooks</a>
-            <a href="return_books.html">Schedule a Return</a>
-            <a href="return_status.html">Track My Returns</a>
+            <a href="{{ url_for('add_book') }}">+ List a Textbook</a>
+            <a href="{{ url_for('marketplace') }}">Browse Textbooks</a>
+            <a href="{{ url_for('return_books') }}">Schedule a Return</a>
+            <a href="{{ url_for('return_status') }}">Track My Returns</a>
         </div>
+
 
     </section>
 
@@ -85,30 +99,52 @@
                 </thead>
 
                 <tbody id="listingTable">
+                    {% for book in my_books %}
                     <tr>
-                        <td>College Physics</td>
-                        <td>$45.00</td>
-                        <td>Good</td>
-                        <td>
-                            <span class="status-active">Available</span>
-                        </td>
-                        <td>
-                            <button class="delete-btn">Remove</button>
-                        </td>
-                    </tr>
+                        <td>{{ book.title }}</td>
 
-                    <tr>
-                        <td>Financial Accounting</td>
-                        <td>$40.00</td>
-                        <td>Like New</td>
                         <td>
-                            <span class="status-active">Available</span>
+                            {% if book.listing_type == 'sell' %}
+                                ${{ "%.2f"|format(book.price) }}
+                            {% else %}
+                                Trade
+                            {% endif %}
                         </td>
+
+                        <td>{{ book.condition }}</td>
+
                         <td>
-                            <button class="delete-btn">Remove</button>
+                            <span class="status-active">
+                                {{ book.status }}
+                            </span>
+                        </td>
+
+
+                        <td>
+                            <a href="{{ url_for('edit_book', book_id=book.id) }}">
+                                Edit
+                        </a>
+
+                        <form method="POST"
+                              action="{{ url_for('delete_book', book_id=book.id) }}"
+                              style="display:inline;"
+                              onsubmit="return confirm('Are you sure you want to remove this textbook?');">
+
+                            <button type="submit" class="delete-btn">
+                                Remove
+                            </button>
+                         </form>
                         </td>
                     </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5">
+                            You haven't listed any textbooks yet.
+                        </td>
+                    </tr>
+                    {% endfor %}
                 </tbody>
+
             </table>
         </div>
 
@@ -129,18 +165,104 @@
                 </thead>
 
                 <tbody>
-                    <tr>
-                        <td>Introduction to Python</td>
-                        <td>Purchase</td>
-                        <td>
-                            <span class="status-pending">Pending</span>
-                        </td>
-                    </tr>
-                </tbody>
+                    {% for req in my_requests %}
+                <tr>
+                    <td>{{ req.textbook.title }}</td>
+                    <td>{{ req.request_type }}</td>
+                <td>
+                    <span class="status-pending">
+                    {{ req.status }}
+                    </span>
+                </td>
+                </tr>
+                {% else %}
+            <tr>
+                <td colspan="3">You have not made any exchange requests yet.</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+
             </table>
         </div>
 
     </section>
+
+<section class="dashboard-panel">
+
+    <h2>Incoming Exchange Requests</h2>
+    <p>Students requesting textbooks you have listed.</p>
+
+    <div class="table-container">
+
+<table class="dashboard-table">
+    <thead>
+        <tr>
+            <th>Textbook</th>
+            <th>Request Type</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for req in incoming_requests %}
+        <tr>
+            <td>{{ req.textbook.title }}</td>
+            <td>{{ req.request_type }}</td>
+            <td>
+                <span class="status-pending">
+                    {{ req.status }}
+                </span>
+            </td>
+            <td>
+                {% if req.status == 'Pending' %}
+
+                <form method="POST"
+                      action="{{ url_for('update_request_status', req_id=req.id) }}"
+                      style="display:inline;">
+
+                    <input type="hidden"
+                           name="status"
+                           value="Accepted">
+
+                    <button type="submit" class="listing-btn">
+                        Accept
+                    </button>
+                </form>
+
+                <form method="POST"
+                      action="{{ url_for('update_request_status', req_id=req.id) }}"
+                      style="display:inline;">
+
+                    <input type="hidden"
+                           name="status"
+                           value="Declined">
+
+                    <button type="submit" class="delete-btn">
+                        Decline
+                    </button>
+                </form>
+
+                {% else %}
+                    {{ req.status }}
+                {% endif %}
+            </td>
+        </tr>
+
+        {% else %}
+        <tr>
+            <td colspan="4">
+                No incoming exchange requests yet.
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+    </div>
+
+</section>
+
 
     <section class="dashboard-panel">
 
@@ -158,32 +280,39 @@
                 </thead>
 
                 <tbody>
+                    {% for return_item in my_returns %}
                     <tr>
-                        <td>Principles of Microeconomics</td>
-                        <td>RAM-102850</td>
-                        <td>December 8, 2026</td>
-                        <td>
-                            <span class="status-pending">
-                                Awaiting Drop-Off
-                            </span>
-                        </td>
-                    </tr>
+                        <td>{{ return_item.book_title }}</td>
 
-                    <tr>
-                        <td>Business Statistics</td>
-                        <td>RAM-102851</td>
-                        <td>November 12, 2026</td>
+                        <td>{{ return_item.return_code }}</td>
+
+                        <td>{{ return_item.drop_off_date }}</td>
+
                         <td>
-                            <span class="status-active">
-                                Completed
-                            </span>
+                            {% if return_item.status == 'Completed' %}
+                                <span class="status-active">
+                                {{ return_item.status }}
+                                </span>
+                            {% else %}
+                                <span class="status-pending">
+                                    {{ return_item.status }}
+                                </span>
+                            {% endif %}
                         </td>
                     </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="4">
+                            You haven't scheduled any bookstore returns yet.
+                        </td>
+                    </tr>
+                    {% endfor %}
                 </tbody>
+
             </table>
         </div>
 
-        <a href="return_books.html" class="dashboard-link">
+        <a href="{{ url_for('return_books') }}" class="dashboard-link">
             Schedule Another Return
         </a>
 
@@ -196,28 +325,6 @@
     <p>For Rams. By Rams.</p>
     <p>Unofficial WSSU student project.</p>
 </footer>
-
-<script>
-    document.querySelectorAll(".delete-btn").forEach(function(button) {
-        button.addEventListener("click", function() {
-
-            const confirmed = confirm(
-                "Are you sure you want to remove this sample listing?"
-            );
-
-            if (confirmed) {
-                this.closest("tr").remove();
-
-                const remaining = document.querySelectorAll(
-                    "#listingTable tr"
-                ).length;
-
-                document.getElementById("listingCount").textContent =
-                    remaining;
-            }
-        });
-    });
-</script>
 
 </body>
 </html>

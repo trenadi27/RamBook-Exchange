@@ -13,13 +13,14 @@
     <div class="logo">Ram<span>Book</span> Exchange</div>
 
     <nav>
-        <a href="index.html">Home</a>
-        <a href="marketplace.html">Browse Books</a>
-        <a href="add_book.html">Sell or Trade</a>
-        <a href="return_books.html">Return Books</a>
-        <a href="dashboard.html">Dashboard</a>
-        <a href="login.html">Login</a>
-        <a href="register.html">Register</a>
+        <a href="{{ url_for('index') }}">Home</a>
+        <a href="{{ url_for('marketplace') }}">Browse Books</a>
+        <a href="{{ url_for('add_book') }}">Sell or Trade</a>
+        <a href="{{ url_for('return_books') }}">Return Books</a>
+        <a href="{{ url_for('dashboard') }}">Dashboard</a>
+        <a href="{{ url_for('login') }}">Login</a>
+        <a href="{{ url_for('register') }}">Register</a>
+
     </nav>
 </header>
 
@@ -32,7 +33,7 @@
             Create your RamBook Exchange account.
         </p>
 
-        <form id="registerForm" method="post">
+        <form id="registerForm" method="post" action="{{ url_for('register') }}">
 
             <label for="firstName">First Name</label>
             <input type="text" id="firstName"
@@ -77,7 +78,7 @@
 
         <p class="auth-link">
             Already have an account?
-            <a href="login.html">Sign In</a>
+            <a href="{{ url_for('login') }}">Sign In</a>
         </p>
 
     </div>
@@ -104,26 +105,14 @@
 
     document.getElementById("registerForm")
         .addEventListener("submit", function(event) {
-            event.preventDefault();
-
             const message = document.getElementById("registerMessage");
 
-            message.hidden = false;
-
             if (password.value !== confirmPassword.value) {
+                event.preventDefault();
+                message.hidden = false;
                 message.style.color = "#C8102E";
                 message.textContent = "Passwords do not match!";
-                return;
             }
-
-            message.style.color = "green";
-            message.textContent =
-                "Registration form completed! Demo only. No account has been saved.";
-
-            this.reset();
-
-            password.type = "password";
-            confirmPassword.type = "password";
         });
 </script>
 

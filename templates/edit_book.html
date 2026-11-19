@@ -1,0 +1,149 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Textbook | RamBook Exchange</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<header>
+    <div class="logo">Ram<span>Book</span> Exchange</div>
+    <nav>
+        <a href="{{ url_for('index') }}">Home</a>
+        <a href="{{ url_for('marketplace') }}">Browse Books</a>
+        <a href="{{ url_for('dashboard') }}">Dashboard</a>
+        <a href="{{ url_for('logout') }}">Logout</a>
+    </nav>
+</header>
+
+<main class="dashboard-container">
+    <h1>Edit Textbook</h1>
+    <p>Update your textbook listing information below.</p>
+
+    <form method="POST"
+          action="{{ url_for('edit_book', book_id=book.id) }}"
+          enctype="multipart/form-data"
+          class="listing-form">
+
+        <label for="title">Textbook Title</label>
+        <input type="text" id="title" name="title"
+               value="{{ book.title }}" required>
+
+        <label for="author">Author</label>
+        <input type="text" id="author" name="author"
+               value="{{ book.author }}" required>
+
+        <label for="isbn">ISBN Number</label>
+        <input type="text" id="isbn" name="isbn"
+               value="{{ book.isbn }}" required>
+
+        <label for="course">Course Name or Number</label>
+        <input type="text" id="course" name="course"
+               value="{{ book.course }}" required>
+
+        <label for="category">Category</label>
+        <select id="category" name="category" required>
+            {% for value, label in [
+                ('science', 'Science'),
+                ('business', 'Business'),
+                ('technology', 'Technology'),
+                ('mathematics', 'Mathematics'),
+                ('other', 'Other')
+            ] %}
+            <option value="{{ value }}"
+                {% if book.category == value %}selected{% endif %}>
+                {{ label }}
+            </option>
+            {% endfor %}
+        </select>
+
+        <label for="condition">Book Condition</label>
+        <select id="condition" name="condition" required>
+            {% for condition in ['Like New', 'Good', 'Fair', 'Damaged'] %}
+            <option value="{{ condition }}"
+                {% if book.condition == condition %}selected{% endif %}>
+                {{ condition }}
+            </option>
+            {% endfor %}
+        </select>
+
+        <label for="listingType">Listing Type</label>
+        <select id="listingType" name="listingType" required>
+            <option value="sell"
+                {% if book.listing_type == 'sell' %}selected{% endif %}>
+                Sell
+            </option>
+            <option value="trade"
+                {% if book.listing_type == 'trade' %}selected{% endif %}>
+                Trade
+            </option>
+            <option value="free"
+                {% if book.listing_type == 'free' %}selected{% endif %}>
+                Give Away
+            </option>
+        </select>
+
+        <div id="priceContainer">
+            <label for="price">Price ($)</label>
+            <input type="number" id="price" name="price"
+                   min="0.01" step="0.01"
+                   value="{{ book.price if book.listing_type == 'sell' else '' }}">
+        </div>
+
+        <label for="status">Listing Status</label>
+        <select id="status" name="status">
+            {% for status in ['Available', 'Pending', 'Sold'] %}
+            <option value="{{ status }}"
+                {% if book.status == status %}selected{% endif %}>
+                {{ status }}
+            </option>
+            {% endfor %}
+        </select>
+
+        <label for="description">Description</label>
+        <textarea id="description" name="description"
+                  rows="5">{{ book.description or '' }}</textarea>
+
+        <label for="bookImage">Update Textbook Image (Optional)</label>
+        <input type="file" id="bookImage" name="bookImage"
+               accept="image/*">
+
+        <button type="submit" class="listing-btn">
+            Save Changes
+        </button>
+
+        <a href="{{ url_for('dashboard') }}">Cancel</a>
+
+    </form>
+</main>
+
+<footer>
+    <p>&copy; 2026 RamBook Exchange</p>
+    <p>For Rams. By Rams.</p>
+</footer>
+
+<script>
+    const listingType = document.getElementById("listingType");
+    const priceContainer = document.getElementById("priceContainer");
+    const price = document.getElementById("price");
+
+    function updatePriceField() {
+        if (listingType.value === "sell") {
+            priceContainer.hidden = false;
+            price.required = true;
+        } else {
+            priceContainer.hidden = true;
+            price.required = false;
+            price.value = "";
+        }
+    }
+
+    listingType.addEventListener("change", updatePriceField);
+    updatePriceField();
+</script>
+
+</body>
+</html>

@@ -12,13 +12,13 @@
     <div  class="logo">Ram<span>Book</span>Exchange</div>
 
     <nav>
-      <a href="index.html">Home</a>
-      <a href="marketplace.html">Browse Books</a>
-      <a href="add_book.html">Sell or Trade</a>
-      <a href="return_books.html">Return Books</a>
-      <a href="dashboard.html">Dashboard</a>
-      <a href="login.html">Login</a>
-      <a href="register.html">Register</a>
+        <a href="{{ url_for('index') }}">Home</a>
+        <a href="{{ url_for('marketplace') }}">Browse Books</a>
+        <a href="{{ url_for('add_book') }}">Sell or Trade</a>
+        <a href="{{ url_for('return_books') }}">Return Books</a>
+        <a href="{{ url_for('dashboard') }}">Dashboard</a>
+        <a href="{{ url_for('login') }}">Login</a>
+        <a href="{{ url_for('register') }}">Register</a>
     </nav>
   </header>
 
@@ -31,10 +31,11 @@
     <p>Save money. Support your campus community.</p>
 
     <div class="hero-buttons">
-        <a href="marketplace.html" class="btn">Browse Textbooks</a>
-        <a href="add_book.html" class="btn-outline">List a Textbook</a>
-         <a href="return_books.html" class="btn-outline">Return Textbooks</a>
+        <a href="{{ url_for('marketplace') }}" class="btn">Browse Textbooks</a>
+        <a href="{{ url_for('add_book') }}" class="btn-outline">List a Textbook</a>
+        <a href="{{ url_for('return_books') }}" class="btn-outline">Return Textbooks</a>
     </div>
+
   </section>
 
   <section class="how-it-works">

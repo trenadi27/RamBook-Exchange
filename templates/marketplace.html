@@ -12,13 +12,14 @@
     <div class="logo">Ram<span>Book</span> Exchange</div>
 
     <nav>
-        <a href="index.html">Home</a>
-        <a href="marketplace.html">Browse Books</a>
-        <a href="add_book.html">Sell or Trade</a>
-        <a href="return_books.html">Return Books</a>
-        <a href="dashboard.html">Dashboard</a>
-        <a href="login.html">Login</a>
-        <a href="register.html">Register</a>
+        <a href="{{ url_for('index') }}">Home</a>
+        <a href="{{ url_for('marketplace') }}">Browse Books</a>
+        <a href="{{ url_for('add_book') }}">Sell or Trade</a>
+        <a href="{{ url_for('return_books') }}">Return Books</a>
+        <a href="{{ url_for('dashboard') }}">Dashboard</a>
+        <a href="{{ url_for('login') }}">Login</a>
+        <a href="{{ url_for('register') }}">Register</a>
+
     </nav>
 </header>
 
@@ -45,61 +46,33 @@
     <h2>Available Textbooks</h2>
     <p class="marketplace-note">Sample textbook listings</p>
 
-    <div class="book-grid">
 
-        <div class="book-card" data-category="science">
-            <div class="book-cover"> Collge Physics</div>
-            <h3>College Physics</h3>
-            <p>Course: PHY 2331</p>
-            <p>Condition: Good</p>
-            <p class="book-price">$45.00</p>
-            <button class="book-btn">Request Book</button>
-        </div>
-         <div class="book-card" data-category="business">
-            <div class="book-cover">Microeconomics</div>
-            <h3>Principles of Microeconomics</h3>
-            <p>Course: Economics</p>
-            <p>Condition: Like New</p>
-            <p class="book-price">$35.00</p>
-            <button class="book-btn">Request Book</button>
-        </div>
+<div class="book-grid">
 
-        <div class="book-card" data-category="technology">
-            <div class="book-cover">Python Programming</div>
-            <h3>Introduction to Python</h3>
-            <p>Course: Programming I</p>
-            <p>Condition: Good</p>
-            <p class="book-price">$30.00</p>
-            <button class="book-btn">Request Book</button>
-        </div>
+    {% for book in books %}
 
-        <div class="book-card" data-category="business">
-            <div class="book-cover">Financial Accounting</div>
-            <h3>Financial Accounting</h3>
-            <p>Course: Accounting</p>
-            <p>Condition: Fair</p>
-            <p class="book-price">$40.00</p>
-            <button class="book-btn">Request Book</button>
-        </div>
+    <div class="book-card" data-category="{{ book.category }}">
+        <div class="book-cover">{{ book.title }}</div>
 
-        <div class="book-card" data-category="mathematics">
-            <div class="book-cover">Business Statistics</div>
-            <h3>Business Statistics</h3>
-            <p>Course: QBA 2325</p>
-            <p>Condition: Good</p>
-            <p class="book-price">$25.00</p>
-            <button class="book-btn">Request Book</button>
-        </div>
+        <h3>{{ book.title }}</h3>
+        <p>Course: {{ book.course }}</p>
+        <p>Condition: {{ book.condition }}</p>
 
-        <div class="book-card" data-category="technology">
-            <div class="book-cover">Software Engineering</div>
-            <h3>Software Engineering</h3>
-            <p>Course: Computer Science</p>
-            <p>Condition: Like New</p>
-            <p class="book-price">$50.00</p>
-            <button class="book-btn">Request Book</button>
-        </div>
+        <p class="book-price">
+            {% if book.listing_type == 'sell' %}
+            ${{ "%.2f"|format(book.price) }}
+            {% else %}
+                Available for Trade
+             {% endif %}
+        </p>
+
+        <a href="{{ url_for('book_details', book_id=book.id) }}"
+            class="book-btn">View Details</a>
     </div>
+
+    {% endfor %}
+
+</div>
 
     <p id="noResults" hidden>No matching textbooks found.</p>
 </section>
@@ -145,33 +118,7 @@
     categoryFilter.addEventListener("change", filterBooks);
 
 
-document.querySelectorAll(".book-btn").forEach(function(button) {
 
-    button.textContent = "View Details";
-
-    button.addEventListener("click", function() {
-
-        const book = this.closest(".book-card");
-
-        const title = book.querySelector("h3").textContent;
-        const price = book.querySelector(".book-price").textContent;
-
-        const information = book.querySelectorAll("p");
-
-        const course = information[0].textContent.replace("Course: ", "");
-        const condition = information[1].textContent.replace("Condition: ", "");
-
-        const params = new URLSearchParams({
-            title: title,
-            price: price,
-            course: course,
-            condition: condition
-        });
-
-        window.location.href = "book_details.html?" + params.toString();
-
-    });
-});
 
 </script>
 

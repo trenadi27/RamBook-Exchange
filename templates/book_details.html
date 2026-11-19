@@ -13,13 +13,13 @@
     <div class="logo">Ram<span>Book</span> Exchange</div>
 
     <nav>
-        <a href="index.html">Home</a>
-        <a href="marketplace.html">Browse Books</a>
-        <a href="add_book.html">Sell or Trade</a>
-        <a href="return_books.html">Return Books</a>
-        <a href="dashboard.html">Dashboard</a>
-        <a href="login.html">Login</a>
-        <a href="register.html">Register</a>
+        <a href="{{ url_for('index') }}">Home</a>
+        <a href="{{ url_for('marketplace') }}">Browse Books</a>
+        <a href="{{ url_for('add_book') }}">Sell or Trade</a>
+        <a href="{{ url_for('return_books') }}">Return Books</a>
+        <a href="{{ url_for('dashboard') }}">Dashboard</a>
+        <a href="{{ url_for('login') }}">Login</a>
+        <a href="{{ url_for('register') }}">Register</a>
     </nav>
 </header>
 
@@ -68,17 +68,29 @@
                 a safe exchange on campus.
             </p>
 
-            <div class="details-buttons">
 
-                <button class="purchase-btn" id="purchaseBtn">
-                    Request to Purchase
-                </button>
+    <div class="details-buttons">
 
-                <button class="trade-btn" id="tradeBtn">
-                    Request a Trade
-                </button>
+        <form method="POST"
+          action="{{ url_for('request_book', book_id=book.id) }}">
+            <input type="hidden" name="request_type" value="Purchase">
 
-            </div>
+            <button type="submit" class="purchase-btn">
+             Request to Purchase
+            </button>
+        </form>
+
+        <form method="POST"
+          action="{{ url_for('request_book', book_id=book.id) }}">
+            <input type="hidden" name="request_type" value="Trade">
+
+            <button type="submit" class="trade-btn">
+            Request a Trade
+            </button>
+        </form>
+
+    </div>
+
 
             <div id="requestConfirmation" role="status" hidden></div>
 
@@ -105,42 +117,6 @@
     <p>For Rams. By Rams.</p>
     <p>Unofficial WSSU student project.</p>
 </footer>
-
-<script>
-    const params = new URLSearchParams(window.location.search);
-
-    const title = params.get("title") || "College Physics";
-    const price = params.get("price") || "$45.00";
-    const course = params.get("course") || "PHY 2331";
-    const condition = params.get("condition") || "Good";
-
-    document.getElementById("bookTitle").textContent = title;
-    document.getElementById("bookCover").textContent = title;
-    document.getElementById("bookPrice").textContent = price;
-    document.getElementById("bookCourse").textContent = course;
-    document.getElementById("bookCondition").textContent = condition;
-
-    function requestBook(type) {
-        const confirmation =
-            document.getElementById("requestConfirmation");
-
-        confirmation.hidden = false;
-
-        confirmation.textContent =
-            type + " request selected for " + title +
-            ". Demo only. No request has been sent.";
-    }
-
-    document.getElementById("purchaseBtn")
-        .addEventListener("click", function() {
-            requestBook("Purchase");
-        });
-
-    document.getElementById("tradeBtn")
-        .addEventListener("click", function() {
-            requestBook("Trade");
-        });
-</script>
 
 </body>
 </html>

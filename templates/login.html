@@ -13,13 +13,14 @@
     <div class="logo">Ram<span>Book</span> Exchange</div>
 
     <nav>
-        <a href="index.html">Home</a>
-        <a href="marketplace.html">Browse Books</a>
-        <a href="add_book.html">Sell or Trade</a>
-        <a href="return_books.html">Return Books</a>
-        <a href="dashboard.html">Dashboard</a>
-        <a href="login.html">Login</a>
-        <a href="register.html">Register</a>
+        <a href="{{ url_for('index') }}">Home</a>
+        <a href="{{ url_for('marketplace') }}">Browse Books</a>
+        <a href="{{ url_for('add_book') }}">Sell or Trade</a>
+        <a href="{{ url_for('return_books') }}">Return Books</a>
+        <a href="{{ url_for('dashboard') }}">Dashboard</a>
+        <a href="{{ url_for('login') }}">Login</a>
+        <a href="{{ url_for('register') }}">Register</a>
+
     </nav>
 </header>
 
@@ -32,7 +33,7 @@
             Sign in to your RamBook Exchange account.
         </p>
 
-        <form id="loginForm" method="post">
+        <form id="loginForm" method="post" action="{{ url_for('login') }}">
 
             <label for="email">Student Email</label>
             <input type="email" id="email" name="email"
@@ -75,6 +76,7 @@
     <p>Unofficial WSSU student project.</p>
 </footer>
 
+
 <script>
     const password = document.getElementById("password");
 
@@ -82,14 +84,8 @@
         .addEventListener("change", function() {
             password.type = this.checked ? "text" : "password";
         });
-
-    document.getElementById("loginForm")
-        .addEventListener("submit", function(event) {
-            event.preventDefault();
-
-            document.getElementById("loginMessage").hidden = false;
-        });
 </script>
+
 
 </body>
 </html>

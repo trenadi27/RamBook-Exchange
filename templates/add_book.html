@@ -12,13 +12,14 @@
     <div class="logo">Ram <span> Book</span> Exchange</div>
 
     <nav>
-        <a href="index.html">Home</a>
-        <a href="marketplace.html">Browse Books</a>
-        <a href="add_book.html">Sell or Trade</a>
-        <a href="return_books.html">Return Books</a>
-        <a href="dashboard.html">Dashboard</a>
-        <a href="login.html">Login</a>
-        <a href="register.html">Register</a>
+        <a href="{{ url_for('index') }}">Home</a>
+        <a href="{{ url_for('marketplace') }}">Browse Books</a>
+        <a href="{{ url_for('add_book') }}">Sell or Trade</a>
+        <a href="{{ url_for('return_books') }}">Return Books</a>
+        <a href="{{ url_for('dashboard') }}">Dashboard</a>
+        <a href="{{ url_for('login') }}">Login</a>
+        <a href="{{ url_for('register') }}">Register</a>
+
     </nav>
 </header>
 
@@ -47,7 +48,8 @@
 
         <h2>Textbook Information</h2>
 
-        <form id="listingForm" enctype="multipart/form-data">
+        <form id="listingForm" method="POST" action="{{ url_for('add_book') }}" enctype="multipart/form-data">
+
 
             <label for="title">Textbook Title</label>
             <input type="text" id="title" name="title"
@@ -167,18 +169,6 @@
             imagePreview.hidden = true;
             imagePreview.removeAttribute("src");
         }
-    });
-
-    document.getElementById("listingForm").addEventListener("submit", function(event) {
-        event.preventDefault();
-
-        document.getElementById("listingConfirmation").hidden = false;
-
-        this.reset();
-        imagePreview.hidden = true;
-        imagePreview.removeAttribute("src");
-
-        listingType.dispatchEvent(new Event("change"));
     });
 </script>
 
